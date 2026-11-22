@@ -7,8 +7,8 @@
   'use strict';
 
   const CONFIG = {
-    // Cerimônia: 28/05/2027, 16h00, horário de Brasília.
-    weddingAt: '2027-05-28T16:00:00-03:00',
+    // Cerimônia: 28/05/2027, 13h30, horário de Brasília.
+    weddingAt: '2027-05-28T13:30:00-03:00',
     // Até quando o site mostra "É hoje!" antes de virar "Casados".
     partyEndsAt: '2027-05-29T04:00:00-03:00',
 
@@ -380,11 +380,11 @@
       'BEGIN:VEVENT',
       'UID:casamento-veronica-joao-igor-20270528',
       'DTSTAMP:20261101T000000Z',
-      'DTSTART:20270528T190000Z', // 16h00 em Brasília
+      'DTSTART:20270528T163000Z', // 13h30 em Brasília
       'DTEND:20270529T060000Z',
       'SUMMARY:Casamento Verônica & João Igor',
       'LOCATION:Paróquia Santíssima Trindade\\, R. Leonardo Gutierrez\\, 125 — Gutierrez\\, Belo Horizonte',
-      `DESCRIPTION:Cerimônia às 16h00. Recepção às 17h30 em Braúnas. Traje esporte fino. ${CONFIG.siteUrl}`,
+      `DESCRIPTION:Cerimônia às 13h30. Recepção às 16h00 em Braúnas. Traje esporte fino. ${CONFIG.siteUrl}`,
       `URL:${CONFIG.siteUrl}`,
       'BEGIN:VALARM', 'TRIGGER:-P1D', 'ACTION:DISPLAY', 'DESCRIPTION:Amanhã é o casamento!', 'END:VALARM',
       'END:VEVENT', 'END:VCALENDAR',
