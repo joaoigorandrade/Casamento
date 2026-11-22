@@ -137,8 +137,9 @@ a:hover { color: var(--deep-red); }
   position: sticky; top: 0; z-index: 20;
   display: flex; align-items: center; gap: 24px;
   padding: 14px var(--bp-gutter);
-  background: color-mix(in srgb, #f5f2ec 92%, transparent);
-  backdrop-filter: blur(6px);
+  /* nearly opaque, so no backdrop blur: re-blurring the page under a sticky bar
+     every scroll frame was the costliest paint on the desktop layout */
+  background: color-mix(in srgb, #f5f2ec 97%, transparent);
   border-bottom: 1px solid var(--color-divider);
 }
 .topbar__logo { display: flex; align-items: center; text-decoration: none; flex: none; --mk: 31px; }

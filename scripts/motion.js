@@ -36,7 +36,7 @@
       drift: 26,           // sideways travel over one fall (±)
       opacity: 0.85,
     },
-    lenis: { lerp: 0.085, wheelMultiplier: 0.9 },
+    lenis: { lerp: 0.12, wheelMultiplier: 1 }, // higher lerp = less glide behind the wheel
     anchorOffset: -64,
   };
 
@@ -322,11 +322,16 @@
     kick();
   };
 
-  // Eased values: current chases target every frame.
+  // Eased values: current chases target every frame, at the same speed on 60
+  // and 120 Hz screens. Layers that only track the scroll skip the easing while
+  // Lenis is on: the scroll is already eased, and easing it twice makes them
+  // trail and wobble against the page.
   const ease = {};
+  let followK = T.follow;
+  const track = (key, target) => (lenis ? (ease[key] = target) : follow(key, target));
   const follow = (key, target) => {
     const cur = ease[key] ?? target;
-    const next = cur + (target - cur) * T.follow;
+    const next = cur + (target - cur) * followK;
     ease[key] = Math.abs(target - next) < 0.01 ? target : next;
     if (ease[key] !== target) busy = true;
     return ease[key];
@@ -335,35 +340,38 @@
   let busy = false;
   let running = false;
   let lastY = -1;
+  let lastTime = 0;
 
   const frame = (time) => {
     if (lenis) lenis.raf(time);
+    const dt = lastTime ? Math.min(64, time - lastTime) : 1000 / 60;
+    lastTime = time;
+    followK = 1 - Math.pow(1 - T.follow, dt / (1000 / 60));
     const y = scrollY;
     busy = lenis ? lenis.isScrolling : false;
 
     // hero: the oval sinks slower than the page, faces drift apart, checker counter-moves
     if (hero && y < heroH + vh) {
       const p = clamp(y / heroH);
-      const ovalY = follow('ovalY', p * T.hero.ovalDrop);
-      const ovalS = 1 - follow('ovalS', p * T.hero.ovalShrink);
+      const ovalY = track('ovalY', p * T.hero.ovalDrop);
+      const ovalS = 1 - track('ovalS', p * T.hero.ovalShrink);
       oval.style.translate = `0 ${ovalY.toFixed(2)}px`;
       oval.style.scale = ovalS.toFixed(4);
-      checker.style.translate = `0 ${follow('chk', p * T.hero.checkerLift).toFixed(2)}px`;
-      const split = follow('split', p * T.hero.split);
+      checker.style.translate = `0 ${track('chk', p * T.hero.checkerLift).toFixed(2)}px`;
+      const split = track('split', p * T.hero.split);
       faceV.style.translate = `${(-split).toFixed(2)}px 0`;
       faceJ.style.translate = `${split.toFixed(2)}px 0`;
-      const turn = follow('turn', p * T.hero.cornerTurn);
+      const turn = track('turn', p * T.hero.cornerTurn);
       corners.forEach((c, i) => { c.style.rotate = `${(i % 2 ? -turn : turn).toFixed(2)}deg`; });
     }
 
     // ornaments drift against the scroll and turn while their section passes
-    for (const d of drifts) {
-      if (y + vh < d.top - 200 || y > d.top + d.h + 200) continue;
+    drifts.forEach((d, k) => {
+      if (y + vh < d.top - 200 || y > d.top + d.h + 200) return;
       const p = clamp(((y + vh) - d.top) / (vh + d.h)) * 2 - 1; // -1 entering … 1 leaving
-      const k = drifts.indexOf(d);
-      d.el.style.translate = `0 ${follow(`dy${k}`, p * d.speed).toFixed(2)}px`;
-      d.el.style.rotate = `${follow(`dr${k}`, p * d.spin).toFixed(2)}deg`;
-    }
+      d.el.style.translate = `0 ${track(`dy${k}`, p * d.speed).toFixed(2)}px`;
+      d.el.style.rotate = `${track(`dr${k}`, p * d.spin).toFixed(2)}deg`;
+    });
 
     // Traje: while the stage is pinned, scrolling assembles the moodboard
     if (dress && y + vh > dressTop - 200 && y < dressTop + dressH + 200) {
@@ -399,6 +407,7 @@
       requestAnimationFrame(frame);
     } else {
       running = false;
+      lastTime = 0;
       if (lenis) idleLenis();
     }
   };
