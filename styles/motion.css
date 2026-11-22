@@ -1,0 +1,182 @@
+/* Casamento — motion layer.
+   Everything here is opt-in through html.motion (set in <head> only when the
+   visitor has not asked for reduced motion), so without it the page is the
+   still design. Numbers live in the tokens below; see assets/MOTION.md. */
+
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);     /* arrive, open */
+  --ease-travel: cubic-bezier(0.77, 0, 0.175, 1); /* move on screen */
+  --ease-in: cubic-bezier(0.55, 0, 0.75, 0.06);   /* leave */
+  --reveal-rise: 22px;
+  --reveal-dur: 900ms;
+  --stagger: 70ms;
+}
+
+/* ── Lenis (smooth wheel) ─────────────────────────────────────────────────── */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* ── Inline vector art (was the casal.png <img>) ──────────────────────────── */
+.couple { display: block; width: 100%; max-width: 300px; height: auto; overflow: visible; }
+svg.hero__date { display: block; width: min(250px, 78%); height: auto; overflow: visible; }
+.couple g, .hero__date g { transform-box: view-box; }
+/* pivots, in the artwork's own units */
+.couple__v, .couple__v-live { transform-origin: 250px 405px; }   /* her neck */
+.couple__j, .couple__j-live { transform-origin: 1160px 445px; }  /* his neck */
+.couple__mono { transform-origin: 705px 256px; }
+.couple__flower, .couple__flower-live { transform-origin: 520px 290px; } /* stem side */
+.couple__burst, .couple__burst-live { transform-origin: 880px 262px; }
+.date__burst, .date__burst-live { transform-origin: 274px 88px; }
+.date__flower, .date__flower-live { transform-origin: 824px 85px; }
+
+@media (max-width: 759.98px) {
+  .couple { max-width: 230px; }
+  svg.hero__date { width: min(210px, 80%); }
+}
+
+/* ── Idle loops (paused off screen by motion.js via .is-offscreen) ─────────── */
+@keyframes tilt-v { from { transform: rotate(-2deg); } to { transform: rotate(2.4deg) translateY(-5px); } }
+@keyframes tilt-j { from { transform: rotate(2deg) translateY(-4px); } to { transform: rotate(-2.2deg); } }
+@keyframes sway   { from { transform: rotate(-9deg); } to { transform: rotate(7deg); } }
+@keyframes spin   { to { transform: rotate(360deg); } }
+@keyframes breathe { from { transform: scale(1); } to { transform: scale(1.035); } }
+
+.motion .couple__v-live     { animation: tilt-v 5200ms ease-in-out -800ms infinite alternate; }
+.motion .couple__j-live     { animation: tilt-j 4600ms ease-in-out -2100ms infinite alternate; }
+.motion .couple__flower-live { animation: sway 3900ms ease-in-out infinite alternate; }
+.motion .couple__burst-live { animation: spin 26s linear infinite; }
+.motion .date__burst-live   { animation: spin 30s linear -9s infinite; }
+.motion .date__flower-live  { animation: sway 4400ms ease-in-out -1500ms infinite alternate; }
+.motion .hero__corner.mark--flower { animation: sway 4800ms ease-in-out -600ms infinite alternate; }
+.motion .hero__corner.mark--burst  { animation: spin 34s linear infinite; }
+.motion .drift--flower use { animation: sway 5200ms ease-in-out infinite alternate; transform-origin: center; transform-box: fill-box; }
+.motion .drift--burst use  { animation: spin 40s linear infinite; transform-origin: center; transform-box: fill-box; }
+.motion .story__photo--empty .mark { animation: breathe 3400ms ease-in-out infinite alternate; }
+
+.motion .is-offscreen,
+.motion .is-offscreen *,
+.motion .is-offscreen.hero__corner { animation-play-state: paused !important; }
+
+/* ── Hero entrance: one short scene on load ──────────────────────────────── */
+@keyframes oval-in  { from { opacity: 0; transform: scale(0.955) translateY(14px); } }
+@keyframes v-in     { from { opacity: 0; transform: translateX(-120px) rotate(-6deg); } }
+@keyframes j-in     { from { opacity: 0; transform: translateX(120px) rotate(6deg); } }
+@keyframes mono-in  { from { opacity: 0; transform: scale(0.9); } }
+@keyframes pop-in   { from { opacity: 0; transform: scale(0.3) rotate(-60deg); } }
+@keyframes rise-in  { from { opacity: 0; transform: translateY(12px); } }
+
+.motion .hero__oval    { animation: oval-in 900ms var(--ease-out) both; }
+.motion .couple__v     { animation: v-in 1100ms var(--ease-out) 250ms both; }
+.motion .couple__j     { animation: j-in 1100ms var(--ease-out) 330ms both; }
+.motion .couple__mono  { animation: mono-in 800ms var(--ease-out) 650ms both; }
+.motion .couple__flower { animation: pop-in 700ms var(--ease-out) 900ms both; }
+.motion .couple__burst { animation: pop-in 700ms var(--ease-out) 1000ms both; }
+.motion .hero__eyebrow { animation: rise-in 800ms var(--ease-out) 150ms both; }
+.motion .hero__names   { animation: rise-in 900ms var(--ease-out) 750ms both; }
+.motion .hero__date    { animation: rise-in 900ms var(--ease-out) 900ms both; }
+.motion .date__burst   { animation: pop-in 700ms var(--ease-out) 1150ms both; }
+.motion .date__flower  { animation: pop-in 700ms var(--ease-out) 1250ms both; }
+.motion .hero__meta    { animation: rise-in 900ms var(--ease-out) 1050ms both; }
+
+/* scroll-linked layers; motion.js writes the individual `translate`/`rotate`/`scale`
+   properties, which compose with the CSS animations above */
+.hero__checker { inset: -80px 0; }
+.motion .hero__oval, .motion .hero__checker, .motion .couple__v, .motion .couple__j,
+.motion .drift { will-change: translate; }
+
+/* ── Scroll reveals ───────────────────────────────────────────────────────── */
+.motion [data-reveal] {
+  opacity: 0; transform: translateY(var(--reveal-rise));
+  transition:
+    opacity calc(var(--reveal-dur) * 0.8) var(--ease-out) var(--d, 0ms),
+    transform var(--reveal-dur) var(--ease-out) var(--d, 0ms);
+}
+.motion [data-reveal].is-in { opacity: 1; transform: none; }
+
+.motion [data-reveal='scale'] { transform: scale(0.965) translateY(16px); }
+.motion [data-reveal='draw'] { opacity: 1; transform: scaleX(0.15); transform-origin: center; }
+.motion [data-reveal='draw'].is-in { transform: none; }
+
+.motion .signature::before { transform: scaleX(0); transform-origin: left; transition: transform 900ms var(--ease-out) 350ms; }
+.motion .signature.is-in::before { transform: none; }
+
+/* ── Drifting ornaments ───────────────────────────────────────────────────── */
+.has-drift { position: relative; overflow-x: clip; }
+.drift { position: absolute; pointer-events: none; z-index: 0; }
+.has-drift > .section__inner { position: relative; z-index: 1; }
+.drift--a { width: 34px; height: 37px; top: 70px; right: 9%; }
+.drift--b { width: 30px; height: 27px; top: 46%; left: 5%; }
+.drift--c { width: 32px; height: 29px; top: 90px; left: 10%; }
+.drift--d { width: 30px; height: 33px; top: 64px; right: 12%; }
+.drift--e { width: 28px; height: 30px; top: 96px; left: 9%; }
+.drift--f { width: 26px; height: 24px; top: 150px; right: 10%; }
+@media (max-width: 759.98px) {
+  .drift--a { top: 46px; right: 7%; width: 26px; height: 28px; }
+  .drift--b { width: 22px; height: 20px; top: 52%; left: 4%; }
+  .drift--c { top: 54px; left: 8%; width: 24px; height: 22px; }
+  .drift--d { top: 42px; right: 8%; width: 24px; height: 26px; }
+  .drift--e { top: 50px; left: 7%; width: 22px; height: 24px; }
+  .drift--f { top: 120px; right: 6%; width: 20px; height: 18px; }
+}
+
+/* ── Timeline that draws as you scroll (mobile layout) ───────────────────── */
+@media (max-width: 759.98px) {
+  .motion .schedule::after {
+    content: ''; position: absolute; left: 5px; top: 10px; bottom: 10px;
+    width: 1px; background: var(--color-accent);
+    transform: scaleY(var(--line, 0)); transform-origin: top;
+  }
+  .motion .schedule__item::before {
+    transition: background-color 500ms var(--ease-out), transform 500ms var(--ease-out);
+    z-index: 1;
+  }
+  .motion .schedule__item.is-past::before { background: var(--color-accent); transform: scale(1.12); }
+}
+
+/* ── Gift rail: the card in focus sits forward (mobile) ──────────────────── */
+.motion .gifts.is-rail .gift { transform-origin: center bottom; will-change: scale; }
+
+/* ── Chrome: top bar, sticky bar ─────────────────────────────────────────── */
+.topbar { transition: box-shadow 300ms var(--ease-out); }
+.topbar.is-scrolled { box-shadow: 0 8px 24px -18px rgba(38, 43, 54, 0.45); }
+
+@media (max-width: 759.98px) {
+  .motion .stickybar__inner { transition: transform 420ms var(--ease-out); }
+  .motion .stickybar.is-tucked .stickybar__inner { transform: translateY(105%); transition-duration: 260ms; transition-timing-function: var(--ease-in); }
+}
+
+/* ── Drawer & gift sheet: animate in and out instead of popping ───────────── */
+.motion .drawer, .motion .giftmodal { transition: background-color 320ms var(--ease-out); }
+.motion .drawer:not(.is-open), .motion .giftmodal:not(.is-open) { background-color: rgba(38, 43, 54, 0); }
+
+.motion .drawer__panel { transition: transform 420ms var(--ease-out), opacity 300ms var(--ease-out); }
+.motion .drawer:not(.is-open) .drawer__panel { transform: translateY(-16px); opacity: 0; transition-duration: 220ms; transition-timing-function: var(--ease-in); }
+.motion .drawer__links a { transition: opacity 500ms var(--ease-out), transform 600ms var(--ease-out); }
+.motion .drawer__links a:nth-child(1) { transition-delay: 60ms; }
+.motion .drawer__links a:nth-child(2) { transition-delay: 100ms; }
+.motion .drawer__links a:nth-child(3) { transition-delay: 140ms; }
+.motion .drawer__links a:nth-child(4) { transition-delay: 180ms; }
+.motion .drawer__links a:nth-child(5) { transition-delay: 220ms; }
+.motion .drawer__links a:nth-child(6) { transition-delay: 260ms; }
+.motion .drawer:not(.is-open) .drawer__links a { opacity: 0; transform: translateY(10px); transition-delay: 0ms; transition-duration: 150ms; }
+
+.motion .giftmodal__panel { transition: transform 360ms var(--ease-out), opacity 260ms var(--ease-out); }
+.motion .giftmodal:not(.is-open) .giftmodal__panel { transform: scale(0.96); opacity: 0; transition-duration: 200ms; transition-timing-function: var(--ease-in); }
+@media (max-width: 759.98px) {
+  .motion .giftmodal__panel { transition: transform 420ms var(--ease-out); }
+  .motion .giftmodal:not(.is-open) .giftmodal__panel { transform: translateY(100%); opacity: 1; transition-duration: 240ms; }
+}
+
+/* ── Venue tabs: the new card glides in ───────────────────────────────────── */
+@keyframes venue-in { from { opacity: 0; transform: translateX(var(--from, 14px)); } }
+@media (max-width: 759.98px) {
+  .motion .venue.is-active { animation: venue-in 420ms var(--ease-out); }
+}
+
+/* ── Press feedback ───────────────────────────────────────────────────────── */
+.motion .btn, .motion .venues__tab, .motion .topbar__menu {
+  transition: transform 140ms var(--ease-out), background-color 200ms ease, color 200ms ease;
+}
+.motion .btn:active, .motion .venues__tab:active, .motion .topbar__menu:active { transform: scale(0.97); }
