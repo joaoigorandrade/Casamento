@@ -149,6 +149,17 @@ svg.hero__date { display: block; width: min(250px, 78%); height: auto; overflow:
   .motion .dress__stage { height: max(560px, calc(100svh - var(--bar))); }
 }
 
+/* ── Álbum: the photo wall assembles while the stage is pinned ───────────── */
+/* Same engine as Traje: motion.js writes --t on every [data-beat] photo (poses in site.css). */
+.motion .album { height: 270svh; }
+.motion .album__stage { position: sticky; top: var(--bar); height: max(620px, calc(100svh - var(--bar))); }
+.motion .album__photo, .motion .album__word, .motion .album__sim, .motion .album__sticker { will-change: translate, rotate, scale, opacity; }
+.motion .album__sticker use { animation: sway 4600ms ease-in-out infinite alternate; transform-origin: center; transform-box: fill-box; }
+@media (max-width: 759.98px) {
+  .motion .album { height: 230svh; }
+  .motion .album__stage { height: max(600px, calc(100svh - var(--bar))); }
+}
+
 /* ── Gift rail: the card in focus sits forward (mobile) ──────────────────── */
 .motion .gifts.is-rail .gift { transform-origin: center bottom; will-change: scale; }
 

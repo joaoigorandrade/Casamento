@@ -58,7 +58,7 @@ a:hover { color: var(--deep-red); }
 
 /* Paper surfaces carry the linen grain too. */
 .hero__oval, .dress__card, .gift, .venue, .rsvp__thanks, .giftmodal__panel, .drawer__panel,
-.story__photo, .gallery .plate, .stickybar__inner {
+.story__photo, .album__frame, .stickybar__inner {
   background-image: var(--grain);
 }
 
@@ -271,29 +271,6 @@ a:hover { color: var(--deep-red); }
 }
 .story__photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 60%; }
 
-/* gallery: three stamps, set down a little crooked */
-.gallery {
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(20px, 4vw, 44px); margin-top: clamp(64px, 9vw, 110px);
-}
-.gallery__item { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 14px; }
-.gallery__item:nth-child(1) { rotate: -2deg; }
-.gallery__item:nth-child(2) { rotate: 1.4deg; translate: 0 18px; }
-.gallery__item:nth-child(3) { rotate: -0.8deg; }
-.gallery .plate {
-  width: 100%; aspect-ratio: 4 / 5; overflow: hidden;
-  border-width: 10px; border-color: var(--paper); background-color: var(--paper);
-}
-.gallery img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 62%; }
-.gallery__item:nth-child(3) img { object-position: 50% 50%; }
-.gallery figcaption {
-  margin: 0; font-family: var(--font-heading); font-style: italic; font-size: 18px;
-  color: var(--deep-red); text-align: center;
-}
-@media (hover: hover) {
-  .gallery__item { transition: rotate 500ms cubic-bezier(0.23, 1, 0.32, 1), scale 500ms cubic-bezier(0.23, 1, 0.32, 1); }
-  .gallery__item:hover { rotate: 0deg; scale: 1.03; }
-}
 .story__text { display: flex; flex-direction: column; gap: 18px; }
 .story__text p {
   margin: 0; font-size: 16px; line-height: 1.85;
@@ -366,6 +343,94 @@ a:hover { color: var(--deep-red); }
 .schedule__note { font-size: 14px; color: var(--muted); margin-top: 4px; }
 .schedule__actions { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 40px; }
 .schedule__actions .btn { min-height: 44px; padding-inline: 22px; }
+
+/* ── Álbum ────────────────────────────────────────────────────────────────── */
+/* A photo wall. This is the finished wall; motion.js plays it in by writing --t (0 → 1) on
+   each [data-beat] photo, and every pose is written so t = 1 is exactly this layout: the
+   entry offsets (--fx/--fy/--fr/--fs) fade to nothing at t = 1. Same method as Traje. */
+.album { position: relative; --bar: 60px; }
+.album [data-beat] { --t: 1; }
+.album__stage { position: relative; overflow: clip; height: clamp(680px, 100svh, 860px); }
+.album__board {
+  position: relative; width: min(1160px, calc(100% - 48px)); height: 100%; margin-inline: auto;
+  --w: clamp(128px, 13.6vw, 168px);
+}
+.album__photo, .album__word, .album__sim, .album__sticker {
+  translate: calc(var(--fx, 0px) * (1 - var(--t))) calc(var(--fy, 0px) * (1 - var(--t)));
+  rotate: calc(var(--r, 0deg) + var(--fr, 0deg) * (1 - var(--t)));
+  scale: calc(1 + (var(--fs, 1) - 1) * (1 - var(--t)));
+}
+.album__photo, .album__sim, .album__sticker { opacity: clamp(0, var(--t) * 4, 1); }
+
+/* the red script behind the wall, written on */
+.album__script { position: absolute; inset: 0; pointer-events: none; }
+.album__word {
+  position: absolute;
+  font-family: var(--font-heading); font-style: italic; font-weight: 500;
+  font-size: clamp(80px, 9vw, 124px); line-height: 1; letter-spacing: -0.02em;
+  color: var(--deep-red); opacity: 0.9; white-space: nowrap; padding: 0 0.12em 0.1em;
+  clip-path: inset(-10% calc((1 - var(--t)) * 100%) -10% 0);
+}
+.album__word--a { top: 1%; left: 41%; --r: -6deg; --fx: -30px; }
+.album__word--b { bottom: 1%; left: 46%; --r: -4deg; --fx: 30px; }
+
+/* polaroids: paper frame, a strip of tape, the caption in red italics */
+.album__photo { position: absolute; z-index: 1; width: var(--w); --fs: 1.15; }
+.album__photo:hover { z-index: 6; }
+.album__frame {
+  position: relative; margin: 0; padding: 8px 8px 0;
+  background-color: var(--paper);
+  box-shadow: 0 18px 28px -16px rgba(38, 43, 54, 0.45), 0 2px 4px rgba(38, 43, 54, 0.08);
+}
+.album__frame img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 4; object-fit: cover; background: var(--check-pale); }
+.album__frame figcaption {
+  padding: 8px 2px 10px; text-align: center;
+  font-family: var(--font-heading); font-style: italic; font-size: 16px; line-height: 1.15;
+  color: var(--deep-red); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+@media (hover: hover) {
+  .album__frame { transition: rotate 500ms cubic-bezier(0.23, 1, 0.32, 1), scale 500ms cubic-bezier(0.23, 1, 0.32, 1); }
+  .album__photo:hover .album__frame { rotate: calc(var(--r, 0deg) * -1); scale: 1.06; }
+}
+.album__tape {
+  position: absolute; top: -11px; left: 50%; margin-left: -32px; width: 64px; height: 20px; z-index: 2;
+  background: color-mix(in srgb, #efe3c8 82%, transparent);
+  clip-path: polygon(0 8%, 6% 0, 12% 10%, 18% 0, 82% 0, 88% 12%, 94% 0, 100% 10%, 100% 92%, 94% 100%, 88% 90%, 82% 100%, 18% 100%, 12% 88%, 6% 100%, 0 90%);
+  rotate: var(--tr, -5deg);
+  /* pressed on as the photo lands */
+  opacity: clamp(0, (var(--t) - 0.7) * 6, 1);
+  scale: calc(1 + clamp(0, 1 - var(--t), 1) * 0.6);
+}
+
+/* the wall: a cluster either side, the ring in the middle, fun first and travel after */
+.album__photo--1  { left: 0;   top: 3%;  --r: -6deg; --fx: -340px; --fy: -60px; --fr: -24deg; }
+.album__photo--2  { left: 14%; top: 0;   --r: 4deg;  --fx: -300px; --fy: -90px; --fr: 18deg; --tr: 6deg; }
+.album__photo--3  { left: 28%; top: 6%;  --r: -3deg; --fx: -260px; --fy: -40px; --fr: -16deg; }
+.album__photo--4  { left: 1%;  top: 51%; --r: 5deg;  --fx: -340px; --fy: 70px;  --fr: 22deg; --tr: 4deg; }
+.album__photo--5  { left: 15%; top: 47%; --r: -4deg; --fx: -300px; --fy: 90px;  --fr: -18deg; }
+.album__photo--6  { left: 29%; top: 55%; --r: 7deg;  --fx: -260px; --fy: 110px; --fr: 20deg; --tr: -8deg; }
+.album__photo--7  { left: 57%; top: 2%;  --r: -5deg; --fx: 260px;  --fy: -60px; --fr: -18deg; }
+.album__photo--8  { left: 71%; top: 7%;  --r: 3deg;  --fx: 300px;  --fy: -90px; --fr: 20deg; --tr: 7deg; }
+.album__photo--9  { right: 0;  top: 1%;  --r: -4deg; --fx: 340px;  --fy: -40px; --fr: -22deg; }
+.album__photo--10 { left: 61%; top: 53%; --r: 4deg;  --fx: 260px;  --fy: 90px;  --fr: 16deg; --tr: -7deg; }
+.album__photo--11 { right: 5%; top: 49%; --r: -6deg; --fx: 320px;  --fy: 80px;  --fr: -20deg; }
+.album__photo--ring {
+  --w: clamp(196px, 19vw, 240px); z-index: 4;
+  left: calc(50% - var(--w) / 2); top: 19%;
+  --r: -2deg; --fy: 160px; --fr: 10deg; --fs: 1.3; --tr: -3deg;
+}
+.album__photo--ring figcaption { font-size: 18px; }
+/* stamped on after the ring lands */
+.album__sim {
+  position: absolute; left: -34px; bottom: 54px; z-index: 3;
+  display: grid; place-items: center; width: 74px; height: 74px; border-radius: 50%;
+  background: var(--paper) var(--grain);
+  border: 2px solid var(--deep-red); outline: 1px solid var(--deep-red); outline-offset: -7px;
+  font-family: var(--font-heading); font-style: italic; font-size: 24px; color: var(--deep-red);
+  box-shadow: 0 10px 18px -12px rgba(38, 43, 54, 0.4);
+  --r: -14deg; --fs: 2; --fr: -40deg;
+}
+.album__sticker { position: absolute; top: -20px; right: -18px; width: 44px; height: 44px; z-index: 3; overflow: visible; --r: 12deg; --fs: 2.2; --fr: 90deg; }
 
 /* ── Traje ────────────────────────────────────────────────────────────────── */
 /* A moodboard collage. This is the finished page; motion.js plays it in by writing --t
@@ -724,14 +789,6 @@ a:hover { color: var(--deep-red); }
   /* história */
   .story { grid-template-columns: 1fr; gap: 0; }
   .story__photo { margin-bottom: 32px; border-width: 10px; }
-  .gallery {
-    display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory;
-    margin: 56px -24px 0; padding: 10px 24px 20px; scroll-padding: 0 24px; scrollbar-width: none;
-  }
-  .gallery::-webkit-scrollbar { display: none; }
-  .gallery__item { flex: 0 0 70%; scroll-snap-align: start; }
-  .gallery__item:nth-child(2) { translate: 0 10px; }
-  .gallery figcaption { font-size: 17px; }
   .story__text { gap: 16px; }
   .story__text p { font-size: 15.5px; }
   .signature { font-size: 21px; margin-top: 6px; }
@@ -788,6 +845,26 @@ a:hover { color: var(--deep-red); }
   .schedule__time { font-size: 22px; }
   .schedule__note { font-size: 13.5px; margin-top: 2px; }
   .schedule__actions { display: grid; grid-template-columns: 1fr 1fr; margin-top: 36px; }
+
+  /* álbum: nine photos, the ring in the middle */
+  .album__stage { height: 700px; }
+  .album__board { width: 100%; height: calc(100% - 76px); --w: 31vw; }
+  .album__photo--extra, .album__script { display: none; }
+  .album__frame { padding: 6px 6px 0; }
+  .album__frame figcaption { font-size: 12.5px; padding: 6px 0 8px; }
+  .album__tape { width: 48px; height: 16px; margin-left: -24px; top: -8px; }
+  .album__photo--1  { left: 1%;  top: 1%; }
+  .album__photo--2  { left: 35%; top: 0; }
+  .album__photo--3  { left: 68%; top: 2%; }
+  .album__photo--4  { left: -1%; top: 37%; }
+  .album__photo--5  { left: 2%;  top: 70%; }
+  .album__photo--7  { left: 35%; top: 73%; --fx: 0px; --fy: 200px; }
+  .album__photo--8  { left: 70%; right: auto; top: 35%; }
+  .album__photo--11 { left: 68%; right: auto; top: 69%; }
+  .album__photo--ring { --w: 44vw; top: 28%; }
+  .album__photo--ring figcaption { font-size: 15px; }
+  .album__sim { width: 58px; height: 58px; font-size: 19px; left: -18px; bottom: 40px; }
+  .album__sticker { width: 34px; height: 34px; top: -14px; right: -12px; }
 
   /* traje */
   .dress__stage { height: max(640px, calc(100svh - var(--bar))); }

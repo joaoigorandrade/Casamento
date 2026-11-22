@@ -84,7 +84,6 @@
     ['.countdown', null, '.kicker, .countdown__cell'],
     ['.story__photo', 'scale'],
     ['.story__text', null, 'p, .signature'],
-    ['.gallery', null, '.gallery__item', true],
     ['.schedule__actions'],
     ['.venues__tabs'],
     ['.venues', null, '.venue'],
@@ -127,7 +126,7 @@
   toReveal.forEach((el) => revealer.observe(el));
 
   /* ── Idle loops sleep off screen ───────────────────────────────────────── */
-  const sleepers = $$('.hero, .has-drift, .countdown, .dress');
+  const sleepers = $$('.hero, .has-drift, .countdown, .dress, .album');
   const sleeper = new IntersectionObserver((entries) => {
     for (const e of entries) {
       e.target.classList.toggle('is-offscreen', !e.isIntersecting);
@@ -260,12 +259,17 @@
   const scheduleItems = schedule ? $$('.schedule__item', schedule) : [];
   const rail = $('.gifts');
   const giftCards = rail ? $$('.gift', rail) : [];
-  const dress = $('.dress');
-  const dressStage = dress ? $('.dress__stage', dress) : null;
-  const dressPieces = dress ? $$('[data-beat]', dress).map((el) => {
-    const [a, b] = el.dataset.beat.split(',').map(Number);
-    return { el, a, b, kind: el.dataset.ease || 'out' };
-  }) : [];
+  // pinned collages (Traje moodboard, photo album): the stage sticks while the section
+  // scrolls past, and each [data-beat="start,end"] piece plays over its window of the run
+  const boards = $$('.dress, .album').map((el) => ({
+    el,
+    stage: $('.dress__stage, .album__stage', el),
+    pieces: $$('[data-beat]', el).map((p) => {
+      const [a, b] = p.dataset.beat.split(',').map(Number);
+      return { el: p, a, b, kind: p.dataset.ease || 'out' };
+    }),
+    top: 0, h: 0, run: 1,
+  }));
   // ease-out for most pieces; a back-out (overshoot, then settle) for the stamped ones
   const backOut = (t, s) => 1 + (s + 1) * (t - 1) ** 3 + s * (t - 1) ** 2;
   const dressEase = {
@@ -287,9 +291,6 @@
   let schedTop = 0;
   let schedH = 1;
   let itemTops = [];
-  let dressTop = 0;
-  let dressH = 0;
-  let dressRun = 1;
 
   const measure = () => {
     vh = innerHeight;
@@ -311,12 +312,12 @@
       schedH = Math.max(1, r.height);
       itemTops = scheduleItems.map((it) => it.getBoundingClientRect().top + y - schedTop + 10);
     }
-    if (dress) {
-      const r = dress.getBoundingClientRect();
+    for (const b of boards) {
+      const r = b.el.getBoundingClientRect();
       // the stage pins below the top bar, so the run starts when the section reaches it
-      dressTop = r.top + y - (parseFloat(getComputedStyle(dressStage).top) || 0);
-      dressH = r.height;
-      dressRun = Math.max(1, r.height - dressStage.offsetHeight);
+      b.top = r.top + y - (parseFloat(getComputedStyle(b.stage).top) || 0);
+      b.h = r.height;
+      b.run = Math.max(1, r.height - b.stage.offsetHeight);
     }
     railCheck();
     kick();
@@ -373,15 +374,16 @@
       d.el.style.rotate = `${track(`dr${k}`, p * d.spin).toFixed(2)}deg`;
     });
 
-    // Traje: while the stage is pinned, scrolling assembles the moodboard
-    if (dress && y + vh > dressTop - 200 && y < dressTop + dressH + 200) {
-      const p = clamp((y - dressTop) / dressRun);
-      dress.style.setProperty('--p', follow('dressP', p).toFixed(4));
-      dressPieces.forEach((d, i) => {
-        const t = follow(`dress${i}`, clamp((p - d.a) / (d.b - d.a)));
+    // Traje and the album: while a stage is pinned, scrolling assembles its collage
+    boards.forEach((b, k) => {
+      if (y + vh < b.top - 200 || y > b.top + b.h + 200) return;
+      const p = clamp((y - b.top) / b.run);
+      b.el.style.setProperty('--p', follow(`board${k}`, p).toFixed(4));
+      b.pieces.forEach((d, i) => {
+        const t = follow(`board${k}.${i}`, clamp((p - d.a) / (d.b - d.a)));
         d.el.style.setProperty('--t', dressEase[d.kind](t).toFixed(4));
       });
-    }
+    });
 
     // timeline: the line fills up to the middle of the screen
     if (schedule && mobile.matches) {

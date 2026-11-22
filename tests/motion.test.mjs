@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
-const TYPES = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.png': 'image/png', '.jpeg': 'image/jpeg', '.svg': 'image/svg+xml' };
+const TYPES = { '.html': 'text/html', '.jpg': 'image/jpeg', '.css': 'text/css', '.js': 'text/javascript', '.png': 'image/png', '.jpeg': 'image/jpeg', '.svg': 'image/svg+xml' };
 const PHONE = { viewport: { width: 375, height: 812 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true };
 
 let server, base, browser;
@@ -206,6 +206,58 @@ test('Traje with reduced motion is the finished collage, not pinned', async () =
   for (const sel of ['.dress__cardwrap', '.dress__tag', '.dress__blazer', '.dress__swatch--1', '.dress__word--a']) {
     const st = await page.$eval(sel, (e) => ({ o: getComputedStyle(e).opacity, tr: getComputedStyle(e).translate }));
     assert.equal(st.o, sel === '.dress__word--a' ? '0.9' : '1', `${sel} visible`);
+    assert.ok(st.tr === 'none' || /^0px( 0px)?$/.test(st.tr), `${sel} at its pose (${st.tr})`);
+  }
+  await close();
+});
+
+// scroll to fraction p of the album pin
+const albumAt = (page, p) => page.evaluate((p) => {
+  const d = document.querySelector('.album'), st = document.querySelector('.album__stage');
+  const top = d.getBoundingClientRect().top + scrollY - (parseFloat(getComputedStyle(st).top) || 0);
+  scrollTo({ top: top + p * (d.offsetHeight - st.offsetHeight), behavior: 'instant' });
+}, p);
+const albumTs = (page) => page.$$eval('.album__photo', (els) => els.map((e) => Number(e.style.getPropertyValue('--t'))));
+
+test('Album: the stage pins and the photos land one by one, the ring last', async () => {
+  const { page, errors, close } = await open();
+  await albumAt(page, 0);
+  await wait(page, 900);
+  const start = await albumTs(page);
+  assert.equal(start.length, 12);
+  assert.ok(start.every((t) => t < 0.05), 'no photo is placed at the start');
+
+  await albumAt(page, 0.45);
+  await wait(page, 900);
+  const bar = await page.$eval('.album__stage', (e) => parseFloat(getComputedStyle(e).top));
+  assert.equal(await page.$eval('.album__stage', (e) => Math.round(e.getBoundingClientRect().top)), bar, 'pinned mid-way');
+  const mid = await albumTs(page);
+  assert.ok(mid[0] > 0.99 && mid[11] < 0.01, 'first photo down, ring still to come');
+
+  await albumAt(page, 1);
+  await wait(page, 1200);
+  assert.ok((await albumTs(page)).every((t) => Math.abs(t - 1) < 0.01), 'every photo lands on its pose');
+  for (const sel of ['.album__photo--ring', '.album__sim']) {
+    assert.equal(await page.$eval(sel, (e) => getComputedStyle(e).opacity), '1', `${sel} visible`);
+  }
+  assert.equal(await page.$$eval('.album__photo--extra', (els) => els.every((e) => getComputedStyle(e).display === 'none')), true, 'extras stay off on phones');
+  assert.deepEqual(errors, []);
+  await close();
+});
+
+test('Album with reduced motion is the finished wall, not pinned', async () => {
+  const { page, close } = await open({ reducedMotion: 'reduce' });
+  await jumpTo(page, '.album');
+  await wait(page, 300);
+  const s = await page.evaluate(() => {
+    const d = document.querySelector('.album'), st = document.querySelector('.album__stage');
+    return { pos: getComputedStyle(st).position, extra: d.offsetHeight - st.offsetHeight };
+  });
+  assert.equal(s.pos, 'relative');
+  assert.ok(s.extra <= 1, `section is just the stage, not a tall pin (${s.extra}px)`);
+  for (const sel of ['.album__photo--1', '.album__photo--ring', '.album__sim']) {
+    const st = await page.$eval(sel, (e) => ({ o: getComputedStyle(e).opacity, tr: getComputedStyle(e).translate }));
+    assert.equal(st.o, '1', `${sel} visible`);
     assert.ok(st.tr === 'none' || /^0px( 0px)?$/.test(st.tr), `${sel} at its pose (${st.tr})`);
   }
   await close();
