@@ -180,3 +180,51 @@ svg.hero__date { display: block; width: min(250px, 78%); height: auto; overflow:
   transition: transform 140ms var(--ease-out), background-color 200ms ease, color 200ms ease;
 }
 .motion .btn:active, .motion .venues__tab:active, .motion .topbar__menu:active { transform: scale(0.97); }
+
+/* ── Countdown: digits roll up (motion.js wraps them in .digit) ──────────── */
+@keyframes roll-in  { from { opacity: 0; transform: translateY(0.85em); } }
+@keyframes roll-out { to   { opacity: 0; transform: translateY(-0.85em); } }
+.digit {
+  display: inline-block; position: relative; vertical-align: top;
+  overflow: hidden; padding-block: 0.14em; margin-block: -0.14em; /* room for the serif figures */
+}
+.digit__in, .digit__out { display: inline-block; }
+.digit__in.is-new { animation: roll-in 520ms var(--ease-out) calc(var(--d, 0ms) + 140ms) both; } /* arrives once the old one has mostly left */
+.digit__out {
+  position: absolute; left: 0; top: 0.14em;
+  animation: roll-out 280ms cubic-bezier(0.4, 0, 0.6, 1) var(--d, 0ms) both;
+}
+
+/* ── Hero petals (mobile; motion.js draws them inside the checkerboard) ──── */
+.petals { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+@media (min-width: 760px) { .petals { display: none; } }
+
+/* ── Timeline: a ring ripples out once as the line reaches each stop ─────── */
+@keyframes ripple { from { opacity: 0.7; transform: scale(1); } to { opacity: 0; transform: scale(2.8); } }
+@media (max-width: 759.98px) {
+  .motion .schedule__item::after {
+    content: ''; position: absolute; left: -28px; top: 9px;
+    width: 11px; height: 11px; border-radius: 50%; box-sizing: border-box;
+    border: 1px solid var(--color-accent); opacity: 0; pointer-events: none;
+  }
+  .motion .schedule__item.is-past::after { animation: ripple 900ms var(--ease-out) 1; }
+}
+
+/* ── RSVP thank-you: the card arrives, the marks pop in and keep swaying ─── */
+@keyframes thanks-in { from { opacity: 0; transform: scale(0.96) translateY(12px); } }
+@keyframes sway-mid {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(8deg); }
+  75% { transform: rotate(-8deg); }
+}
+.motion .rsvp__thanks:not([hidden]) { animation: thanks-in 600ms var(--ease-out) both; }
+.motion .rsvp__thanks:not([hidden]) .rsvp__thanks-marks { animation: pop-in 700ms var(--ease-out) 250ms both; }
+.motion .rsvp__thanks:not([hidden]) .rsvp__thanks-marks .mark--flower { animation: sway-mid 4200ms ease-in-out 950ms infinite; }
+.motion .rsvp__thanks:not([hidden]) .rsvp__thanks-marks .mark--burst { animation: spin 22s linear 950ms infinite; }
+.motion .rsvp__thanks:not([hidden]) > .rsvp__thanks-title { animation: rise-in 700ms var(--ease-out) 380ms both; }
+.motion .rsvp__thanks:not([hidden]) > p { animation: rise-in 700ms var(--ease-out) 460ms both; }
+.motion .rsvp__thanks:not([hidden]) > .btn { animation: rise-in 700ms var(--ease-out) 540ms both; }
+
+/* ── Press feedback on the RSVP choices ───────────────────────────────────── */
+.motion .seg-opt { transition: transform 140ms var(--ease-out), background-color 200ms ease, color 200ms ease; }
+.motion .seg-opt:active { transform: scale(0.97); }

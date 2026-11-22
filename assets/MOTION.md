@@ -24,3 +24,11 @@ Part 1 (the method) lives in `.claude/skills/rossark-motion-skill/MOTION.md`. Th
 - Gift cards reveal together, because a rail card would otherwise stay invisible while it peeks in from the edge.
 - Touch scrolling stays native. Lenis only smooths the mouse wheel and anchor jumps (1.2 s ease-in-out, offset −64px for the top bar).
 - Idle loops pause off screen (`.is-offscreen`).
+- Countdown digits roll up instead of snapping (`window.__roll`, called by `site.js`). Only the changed places roll; each place to the left starts `T.rollCarry` ms later, like a carry. The old digit leaves first (280 ms), and the new one rises in 140 ms later, so the two never pile up mid-cell. Off screen, tucked or in the background, the text is just written.
+- Hero petals (mobile only): 9 flowers and stars from `#i-flower`/`#i-burst` fall through the checkerboard, behind the oval, in one SVG on one rAF clock (`T.petals`). Each has a seeded speed, sway, drift and turn; they fade only at the top and bottom edges. The clock stops off screen, in the background and on the desktop layout, and never jumps after a pause.
+- Timeline stops ripple once (a ring, 900 ms) when the drawing line reaches them.
+- RSVP thank-you card arrives (scale 0.96 + rise), its marks pop in and then sway/turn; title, text and button stagger in.
+- Press feedback (0.97) on the RSVP yes/no choices. Gift cards get none: their reveal transition and the rail's inline `scale` already own them.
+
+## Tests
+`npm test` (Node's test runner plus `playwright-core`, offline: external requests are blocked) checks at phone size: the hero entrance lands at opacity 1, petals move and sleep off screen, digits roll and settle on the right value, the timeline draws and ripples, the thank-you card animates, reduced motion is the still design, desktop has no petals, and nothing scrolls sideways. Lenis is blocked in the tests, so the page falls back to `scroll-behavior: smooth`; tests scroll with `behavior: 'instant'`.

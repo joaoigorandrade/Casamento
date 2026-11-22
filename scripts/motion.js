@@ -23,6 +23,15 @@
       cornerTurn: 140,     // deg the corner marks turn over the hero's height
     },
     railScale: 0.06,       // how much smaller gift cards out of focus are
+    rollCarry: 70,         // ms each countdown digit to the left rolls after the one on its right
+    petals: {              // hero petals (mobile), in px and ms
+      count: 9,
+      size: [10, 17],
+      period: 12000,       // one fall from top to bottom (±20% per petal)
+      sway: 14,
+      drift: 26,           // sideways travel over one fall (±)
+      opacity: 0.85,
+    },
     lenis: { lerp: 0.085, wheelMultiplier: 0.9 },
     anchorOffset: -64,
   };
@@ -114,11 +123,124 @@
   toReveal.forEach((el) => revealer.observe(el));
 
   /* ── Idle loops sleep off screen ───────────────────────────────────────── */
-  const sleepers = $$('.hero, .has-drift, .story__photo');
+  const sleepers = $$('.hero, .has-drift, .story__photo, .countdown');
   const sleeper = new IntersectionObserver((entries) => {
-    for (const e of entries) e.target.classList.toggle('is-offscreen', !e.isIntersecting);
+    for (const e of entries) {
+      e.target.classList.toggle('is-offscreen', !e.isIntersecting);
+      if (e.target.classList.contains('hero')) petals.wake();
+    }
   }, { rootMargin: '80px 0px' });
+
+  /* ── Countdown: changed digits roll up instead of snapping ─────────────── */
+  // site.js calls this with the new value. Digits are compared from the right,
+  // and each place to the left rolls a beat later, like a carry.
+  const rollUnseen = (el) => document.hidden || el.closest('.is-offscreen, .is-tucked');
+  window.__roll = (el, next) => {
+    const prev = el._shown ?? el.textContent;
+    el._shown = next;
+    if (rollUnseen(el) || prev.length !== next.length || !/^\d+$/.test(prev + next)) {
+      el.textContent = next;
+      return;
+    }
+    if (!el.querySelector('.digit')) {
+      el.innerHTML = [...prev].map((c) => `<span class="digit"><span class="digit__in">${c}</span></span>`).join('');
+    }
+    const cells = el.querySelectorAll('.digit');
+    [...next].forEach((c, i) => {
+      const cell = cells[i];
+      const cur = cell.querySelector('.digit__in');
+      if (cur.textContent === c) return;
+      cell.querySelector('.digit__out')?.remove();
+      cur.className = 'digit__out';
+      cur.setAttribute('aria-hidden', 'true');
+      cur.addEventListener('animationend', () => cur.remove(), { once: true });
+      const inc = document.createElement('span');
+      inc.className = 'digit__in is-new';
+      inc.textContent = c;
+      cell.style.setProperty('--d', `${(next.length - 1 - i) * T.rollCarry}ms`);
+      cell.appendChild(inc);
+    });
+  };
+
+  /* ── Petals drifting down the hero (mobile) ────────────────────────────── */
+  // One SVG inside the checkerboard, so it rides the checker's parallax and
+  // falls behind the oval. One clock; it stops off screen, in the background
+  // and on the desktop layout.
+  const seeded = (i, k = 0) => { const x = Math.sin(i * 127.1 + k * 311.7) * 43758.5453; return x - Math.floor(x); };
+  const wave = (t, period, phase = 0) => Math.sin((t / period + phase) * Math.PI * 2);
+  const loop = (t, period, phase = 0) => ((t / period + phase) % 1 + 1) % 1;
+
+  const petals = (() => {
+    const host = $('.hero__checker');
+    const heroEl = $('.hero');
+    if (!host || !heroEl) return { wake() {} };
+    const NS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('class', 'petals');
+    svg.setAttribute('aria-hidden', 'true');
+    const items = Array.from({ length: T.petals.count }, (_, i) => {
+      const s = T.petals.size[0] + seeded(i, 1) * (T.petals.size[1] - T.petals.size[0]);
+      const g = document.createElementNS(NS, 'g');
+      const use = document.createElementNS(NS, 'use');
+      use.setAttribute('href', i % 3 === 0 ? '#i-burst' : '#i-flower');
+      use.setAttribute('width', s.toFixed(1));
+      use.setAttribute('height', s.toFixed(1));
+      use.setAttribute('x', (-s / 2).toFixed(1));
+      use.setAttribute('y', (-s / 2).toFixed(1));
+      g.appendChild(use);
+      svg.appendChild(g);
+      return {
+        g, burst: i % 3 === 0,
+        period: T.petals.period * (0.8 + seeded(i, 2) * 0.4),
+        phase: seeded(i, 3),
+        x: seeded(i, 4),
+        swayP: 3600 * (0.85 + seeded(i, 5) * 0.3),
+        swayPh: seeded(i, 6),
+        drift: (seeded(i, 7) - 0.5) * 2 * T.petals.drift,
+        turn: seeded(i, 8) * 360,
+        dir: seeded(i, 9) > 0.5 ? 1 : -1,
+      };
+    });
+    host.appendChild(svg);
+
+    let W = 1, H = 1, t = 0, last = 0, on = false;
+    const size = () => { W = host.clientWidth || 1; H = host.clientHeight || 1; };
+    const draw = () => {
+      for (const p of items) {
+        const k = loop(t, p.period, p.phase);
+        const y = -20 + k * (H + 40);
+        const x = p.x * W + T.petals.sway * wave(t, p.swayP, p.swayPh) + p.drift * k;
+        const r = p.turn + (p.burst ? p.dir * t * 0.02 : 24 * wave(t, p.swayP * 1.3, p.swayPh + 0.25));
+        const fade = Math.min(1, k / 0.06, (1 - k) / 0.06);
+        p.g.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${r.toFixed(1)})`);
+        p.g.setAttribute('opacity', (fade * T.petals.opacity).toFixed(3));
+      }
+    };
+    const tick = (now) => {
+      if (!on) return;
+      t += Math.min(50, now - last); // a long gap (tab away) never makes them jump
+      last = now;
+      draw();
+      requestAnimationFrame(tick);
+    };
+    const wake = () => {
+      const want = mobile.matches && !document.hidden && !heroEl.classList.contains('is-offscreen');
+      svg.style.display = mobile.matches ? '' : 'none';
+      if (want === on) return;
+      on = want;
+      if (on) { size(); last = performance.now(); requestAnimationFrame(tick); }
+    };
+    addEventListener('resize', size);
+    mobile.addEventListener('change', wake);
+    document.addEventListener('visibilitychange', wake);
+    size();
+    draw();
+    return { wake, get running() { return on; } };
+  })();
+  window.__petals = petals; // read by tests
+
   sleepers.forEach((el) => sleeper.observe(el));
+  petals.wake();
 
   /* ── Scroll-linked layers ──────────────────────────────────────────────── */
   const hero = $('.hero');

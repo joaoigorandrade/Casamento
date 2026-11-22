@@ -48,7 +48,15 @@
         m: pad((diff % 3600) / 60),
         s: pad(diff % 60),
       };
-      for (const el of cells) el.textContent = values[el.dataset.cd];
+      for (const el of cells) {
+        const v = values[el.dataset.cd];
+        if (el.dataset.v === v) continue;
+        const first = el.dataset.v === undefined;
+        el.dataset.v = v;
+        // motion.js rolls the changed digits; the first write just sets the text
+        if (!first && window.__roll) window.__roll(el, v);
+        else el.textContent = v;
+      }
     };
 
     tick();

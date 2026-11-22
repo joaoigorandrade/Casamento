@@ -18,6 +18,15 @@ python3 -m http.server 8777
 
 Para publicar na Vercel, basta `vercel deploy` na raiz — não há configuração a fazer.
 
+## Testes
+
+Testes de movimento (Chromium headless em tamanho de celular):
+
+```bash
+npm install
+npm test
+```
+
 ## Estrutura
 
 ```
@@ -25,6 +34,8 @@ index.html            página única, com todas as seções
 styles/classical.css  design system "Classical" (tokens + componentes), vindo do projeto de design
 styles/site.css       estilos da página; o bloco @media (max-width:759.98px) é o layout mobile
 scripts/site.js       contagem regressiva, abas dos locais, modal de Pix, RSVP e menu mobile
+scripts/motion.js     movimento: rolagem suave, revelações, parallax, pétalas e dígitos que rolam
+tests/                testes de movimento (npm test)
 assets/casal.png      ilustração do casal — também serve de sprite para o monograma e os ornamentos
 assets/selo.jpeg      selo do convite (não usado na página; mantido como referência)
 uploads/              artes de referência do convite, como enviadas ao projeto de design
