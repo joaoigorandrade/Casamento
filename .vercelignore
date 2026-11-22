@@ -1,0 +1,15 @@
+# Only what the page uses is published. The source artwork stays in the repo.
+assets/arte-*
+assets/selo.jpeg
+assets/photos-*
+assets/miniatura*
+assets/MOTION.md
+tests/
+scripts/*.test.*
+node_modules/
+package*.json
+skills-lock.json
+.agents/
+.claude/
+README.md
+scripts/*.gs

@@ -80,6 +80,8 @@
     ['.countdown', null, '.kicker, .countdown__cell'],
     ['.story__photo', 'scale'],
     ['.story__text', null, 'p, .signature'],
+    ['.gallery', null, '.gallery__item', true],
+    ['.schedule__actions'],
     ['.venues__tabs'],
     ['.venues', null, '.venue'],
     ['.venues__note'],
@@ -123,7 +125,7 @@
   toReveal.forEach((el) => revealer.observe(el));
 
   /* ── Idle loops sleep off screen ───────────────────────────────────────── */
-  const sleepers = $$('.hero, .has-drift, .story__photo, .countdown');
+  const sleepers = $$('.hero, .has-drift, .countdown');
   const sleeper = new IntersectionObserver((entries) => {
     for (const e of entries) {
       e.target.classList.toggle('is-offscreen', !e.isIntersecting);

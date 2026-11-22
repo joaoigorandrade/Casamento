@@ -6,28 +6,67 @@
 <title>Verônica &amp; João Igor · 28.05.2027</title>
 <meta name="description" content="Guarde a data do nosso casamento: 28 de maio de 2027, em Belo Horizonte. Cerimônia, programação, traje, lista de presentes e confirmação de presença.">
 <meta name="theme-color" content="#f5f2ec">
-<link rel="icon" href="assets/casal.png">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 
+<!-- ✋ VOCÊ: quando tiver o domínio final (ex.: www.veronicaejoaoigor.com.br), troque
+     "https://casamento-veronica-joao-igor.vercel.app" nas 3 linhas abaixo (og:url, og:image
+     e canonical). Precisa ser o endereço COMPLETO com https://, senão o WhatsApp não mostra a
+     imagem. Depois de publicar, cole o link em https://developers.facebook.com/tools/debug/
+     e clique em "Scrape Again" para o WhatsApp/Instagram pegarem a versão nova. -->
+<link rel="canonical" href="https://casamento-veronica-joao-igor.vercel.app/">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="pt_BR">
+<meta property="og:url" content="https://casamento-veronica-joao-igor.vercel.app/">
 <meta property="og:title" content="Verônica &amp; João Igor · 28.05.2027">
 <meta property="og:description" content="Guarde a data do nosso casamento: 28 de maio de 2027, em Belo Horizonte.">
-<meta property="og:image" content="assets/casal.png">
+<meta property="og:image" content="https://casamento-veronica-joao-igor.vercel.app/assets/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Selo do convite: Verônica &amp; João Igor, 28 de maio de 2027">
+<meta name="twitter:card" content="summary_large_image">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;family=Lora:ital,wght@0,400;0,600;1,400&amp;display=swap">
 <link rel="stylesheet" href="styles/classical.css">
 <link rel="stylesheet" href="styles/site.css">
 <link rel="stylesheet" href="styles/motion.css">
-<script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("motion")</script>
+<script>
+/* motion: animations on unless the visitor asked for less. has-intro: the envelope shows on the
+   first visit only (not when arriving on a #section link, and not for test robots). */
+(()=>{const r=document.documentElement;if(!matchMedia("(prefers-reduced-motion: reduce)").matches)r.classList.add("motion");let seen=null;try{seen=localStorage.getItem("vj-intro")}catch(e){}if(!seen&&!location.hash&&!navigator.webdriver&&!/[?&](nointro|agora)\b/.test(location.search))r.classList.add("has-intro")})();
+</script>
 </head>
 
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <symbol id="i-flower" viewBox="476 211 87 94"><path d="M500.909 288.271C502.754 287.393 505.502 285.44 507.841 283.273C507.987 283.74 508.159 284.192 508.36 284.626C509.479 287.044 511.551 293.945 513.972 296.059C515.868 297.714 517.75 298.993 520.16 299.197C522.651 299.407 525.129 299.682 526.539 298.747C528.01 297.771 531.001 291.67 532.545 288.271C533.214 286.798 534.001 285.263 534.501 283.287C535.295 283.665 536.182 284.025 537.183 284.359C540.893 285.597 545.381 286.744 550.345 285.364C557.936 283.254 555.926 276.286 552.805 269.949C550.295 264.854 548.059 263.003 544.156 259.309C542.337 257.586 540.44 256.154 538.641 255.004C538.913 254.99 539.179 254.954 539.437 254.893C541.956 254.3 544.965 253.477 546.014 252.139C546.971 250.918 548.368 249.424 548.47 244.558C548.581 239.29 548.464 234.706 547.601 232.45C546.993 230.861 546.078 228.735 544.156 226.907C541.359 224.247 537.7 220.967 532.098 222.27C528.841 223.028 527.025 225.308 522.671 230.157C521.185 231.812 519.89 233.204 518.841 234.342C518.72 234.01 518.586 233.674 518.436 233.333C516.609 229.152 514.45 224.571 512.051 221.57C510.456 219.574 509.305 218.068 507.874 217.68C505.114 216.93 500.101 216.276 495.56 218.82C491.02 221.362 487.526 223.411 486.447 224.694C485.365 225.98 484.228 227.426 484.121 230.227C483.928 235.265 483.572 240.606 484.833 243.959C486.2 247.59 487.91 251.385 490.186 254.212C489.254 254.971 488.413 255.911 487.638 257.192C484.58 262.242 480.592 266.708 480.69 271.748C480.792 276.963 480.687 281.985 481.859 284.647C483.556 288.503 485.672 292.478 487.638 292.692C490.373 292.989 496.662 290.292 500.909 288.271Z" fill="#CB3700"/></symbol>
   <symbol id="i-burst" viewBox="832 219 95 86"><path d="M870.3 271.8C871.6 266.8 871.6 266.8 871.6 266.8C871.8 265.5 869 272.2 868.7 272.9L868.6 273.2C866.6 277.3 863.3 284.3 861.5 288C859.5 291.9 859.3 292.3 858.9 292.4C857.9 292.9 856.6 293.3 855.4 292.7C855.2 292.5 855.1 292.4 856.3 288.1C858.6 280.1 866.1 265.1 866.1 265.1C866.1 265.1 851.5 277.3 844 283.2C842.6 284.3 839.9 285 839.2 284.7C838.9 284.6 837.5 283.1 837.8 282.8C842 277.2 854 266.2 861 263.1C861.9 262.8 862.4 262.6 862.6 262.5C862.2 262.6 861.6 262.6 859.9 262.4C858.5 262.3 856.1 262.1 852.2 261.3C848.3 260.5 843 259.2 840.3 258.4C837.5 257.7 837.2 257.5 837 257.3C836.8 257.1 836.7 256.9 836.7 256.7C836.7 256.3 836.8 255.5 837.4 254.5C838.4 252.9 839 252.1 840.1 251.9C840.8 251.8 841.7 251.8 845.6 252.8C849.1 253.8 855.4 255.5 858.7 256.3C862 257.2 862.3 257.2 862.3 257.2C862.4 257.1 862.3 257 859.7 255.3C857.2 253.7 852.3 250.6 849.8 248.9C847.1 247.1 845.9 246 844.6 244.1C843.8 242.8 843.3 242.1 843.2 241.6C843 240.5 841.6 238.1 843.6 237.5C844.2 237.3 845.2 237.6 846.7 238.4C847.7 239 849.1 239.8 852.3 242.6C855.6 245.3 860.5 249.8 863.2 252.2C865.8 254.5 866.2 254.7 866.2 254.7C865.2 253.8 862.2 251.5 861.1 249.9C860.9 249.6 859.4 246.8 857.5 242.8C856.8 241.3 856.6 241 856.2 239.3C855.8 237.7 855 235 854.7 233.3C854.5 231.3 854.2 228.5 855.9 227.7C856.2 227.5 856.5 227.6 856.6 227.7C856.8 227.9 856.9 228 859.5 232.3C861.2 235.1 871.1 253.3 871.1 252.3C869 243.4 868.4 235.6 870.9 225.1C871.1 224.2 871.7 223.7 872.2 223.6C872.7 223.5 873.7 223.6 874.6 224.5C875 224.9 876 226.1 876.6 229.4C877.2 232.7 877.8 238.2 878.1 240.6C878.4 242.4 879.4 250.6 879.5 250.1C880.7 245.1 882.9 238.3 884.5 233.2C885.1 231 885.9 227 888 226.6C888.8 226.4 889.7 226.4 890.2 226.7L890.2 226.7C890.9 227.1 891.6 227.5 892 228.7C892.3 229.6 892.7 231.6 891.7 235.9C891.1 238.8 889.9 243.8 889.3 246.5C888.7 249.1 888.7 249.4 889.2 248.9C889.6 248.4 890.6 247.2 891.8 245.7C893.1 244.2 894.6 242.5 895.7 241.3C896.7 240.2 897.3 239.7 898.8 238.6C900.4 237.5 902.8 235.8 904.3 234.8C905.8 233.9 906.2 233.6 906.7 233.6C908.3 233.4 909.9 233.5 910.7 234.2C911.1 234.5 911.4 234.8 911.4 235.3C911.5 236.1 911.4 237.9 909.5 240.7C908.3 242.3 907.1 243.9 904 246.2C901.7 248 897.9 250.7 895.8 252.2C893.7 253.8 893.2 254.3 893.3 254.3C893.6 254.2 894.4 254 896.1 253.2C896.9 252.8 898.7 251.5 902.3 250C904.2 249.2 906.4 248.6 909.2 248.2C911.9 247.9 915.2 247.7 917 247.8C919.4 247.8 920.6 247.9 921.6 248.3C922 248.5 922.3 248.7 921.5 249.7C919.4 252.6 917.7 254.9 916.9 255.5C915.7 256.3 914.7 257 913.2 257.5C911.9 257.9 909.9 258.5 906.6 259C903.3 259.5 898.9 259.9 896.8 260.2C894.8 260.4 895 260.5 895.6 260.4C897 260.3 898.6 260.2 900.9 260.6C902.4 260.9 904.9 261.5 907 262.1L907.1 262.1C909.2 262.7 911 263.2 912.1 263.9C915 265.4 916.4 266.4 917 267.8C917.7 269.5 918.4 271.7 917.8 272.8C917.5 273.4 917.2 273.9 916.8 274C916.4 274.2 916 274.3 913.8 273.8C911.7 273.3 907.9 272.4 903.2 270.9C898.6 269.5 893.4 267.5 890.8 266.6C888.3 265.7 888.4 265.8 889.2 266.4L889.3 266.4C890.1 267.1 891.6 268.4 893.5 270.3C895.3 272.2 897.5 274.7 899.4 277.4C901.3 280.2 903.1 283 903.8 284.6C905 287.3 905.5 288.5 904.9 289.7C904.7 289.9 904.6 290.1 903.9 290C903.2 289.9 902 289.6 901 289.1C899 288.2 897.3 287.3 896.1 286.1C895.1 285.1 894.1 283.4 891.4 280.3C889.6 278.2 886.8 275.2 885.4 273.7C883.9 272.1 883.7 272 883.6 272.1C883.6 272.4 883.5 272.9 884.1 275C884.6 276.7 885.5 279.8 886.3 283.3C887.1 286.8 888 290.5 888.2 292.6C888.4 296.4 888.4 299 887.1 299.9C886.9 300 886.7 300 886.3 299.7C885.4 298.9 883.8 297.3 882.4 295.2C881.8 294.3 881.5 293.7 880.6 290.8C879.7 288 878.1 283.2 877.5 280.2C876.7 276 876.6 274.3 876.7 273.4C876.8 272.9 877 272.4 876.2 275.3C875.4 278.1 873.7 284.2 872.3 288.3C870.8 292.5 869.7 294.7 868.9 295.9C867.9 297.5 867.4 298.1 866.9 298.5C866.4 298.8 865.8 299.1 865.1 299C864.8 298.9 864.6 298.7 864.4 298.6C864.3 298.4 864.2 298.3 864.2 298C864.1 297.7 864.1 297.3 865.3 292C866.6 286.7 869.1 276.8 870.3 271.8L870.3 271.8Z" fill="#F38D43"/></symbol>
+  <symbol id="i-mono" viewBox="580 125 250 260"><path d="M776.721 135.985C776.682 136.055 769.857 148.268 748.41 186.899C720.099 237.895 691.788 300.18 641.451 319.085L651.671 173.017C651.671 167.679 650.845 163.014 649.52 158.961C648.282 169.081 639.659 176.919 629.204 176.919C617.899 176.919 608.734 167.755 608.734 156.45C608.734 145.145 617.899 135.98 629.204 135.98C629.528 135.98 629.85 135.989 630.17 136.004C630.142 135.991 630.127 135.983 630.127 135.983C658.438 135.983 669.763 155.746 669.763 195.382V263.326L745.245 135.98L776.721 135.985Z" />
+      <path d="M819.912 174.945C807.252 198.938 773.585 264.828 750.937 304.462C728.288 344.096 687.433 375.616 648.591 375.616C629.698 375.616 604.694 367.174 594.149 353.177C590.993 349.575 589.078 344.857 589.078 339.691C589.078 328.387 598.243 319.223 609.548 319.223C620.852 319.223 630.016 328.387 630.017 339.691C630.017 343.787 628.812 347.602 626.74 350.802C674.979 350.855 708.361 319.483 740.456 259.878C760.9 221.911 785.939 174.945 785.939 174.945H819.912Z" /></symbol>
 </svg>
 <div class="site">
+
+  <!-- ── Envelope intro (first visit) ─────────────────────────────────────── -->
+  <div class="intro" id="intro" role="dialog" aria-modal="true" aria-label="Convite de casamento">
+    <div class="intro__checker" aria-hidden="true"></div>
+    <div class="intro__stage">
+      <div class="intro__kicker">Você recebeu um convite</div>
+      <button class="envelope" type="button" data-intro-open aria-label="Abrir o convite">
+        <span class="envelope__back" aria-hidden="true"></span>
+        <span class="envelope__card" aria-hidden="true"><img src="assets/img/selo.jpg" alt="" width="900" height="900"></span>
+        <span class="envelope__pocket" aria-hidden="true"><i></i></span>
+        <span class="envelope__flap" aria-hidden="true"><i></i></span>
+        <span class="envelope__seal" aria-hidden="true"><svg><use href="#i-mono"></use></svg></span>
+      </button>
+      <div class="intro__to">Para você, com carinho<br><span>Verônica <span class="amp">&amp;</span> João Igor</span></div>
+      <div class="intro__actions">
+        <span class="intro__hint" aria-hidden="true">Toque no selo para abrir</span>
+        <button class="intro__skip" type="button" data-intro-skip>Pular</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ── Top bar ──────────────────────────────────────────────────────────── -->
   <nav class="topbar">
@@ -96,7 +135,7 @@
 
   <!-- ── Countdown ────────────────────────────────────────────────────────── -->
   <section class="countdown" aria-label="Contagem regressiva">
-    <div class="kicker">Faltam</div>
+    <div class="kicker countdown__kicker">Faltam</div>
     <div class="countdown__grid">
       <div class="countdown__cell">
         <div class="countdown__num" data-cd="d">—</div>
@@ -115,6 +154,15 @@
         <div class="countdown__label"><span class="long">segundos</span><span class="short">seg</span></div>
       </div>
     </div>
+    <!-- shown by site.js on the day (data-phase="today") and after it (data-phase="after") -->
+    <div class="countdown__done countdown__done--today">
+      <div class="countdown__done-title">É hoje!</div>
+      <p>Cerimônia às 16h00 na Paróquia Santíssima Trindade. Nos vemos lá.</p>
+    </div>
+    <div class="countdown__done countdown__done--after">
+      <div class="countdown__done-title">Casados <span class="amp">&amp;</span> felizes</div>
+      <p>Obrigado por fazer parte do nosso dia. As fotos chegam em breve.</p>
+    </div>
   </section>
 
   <!-- ── Nossa história ───────────────────────────────────────────────────── -->
@@ -128,17 +176,33 @@
         <h2 class="section__title">Dois caminhos,<br class="br-mobile"> um só passo</h2>
       </div>
       <div class="story">
-        <!-- Troque este bloco por <img src="assets/foto-casal.jpg" alt="Verônica e João Igor">
-             quando a foto do casal estiver escolhida. -->
-        <figure class="plate story__photo story__photo--empty">
-          <span class="mark mark--flower" aria-hidden="true"></span>
-          <figcaption>Foto do casal</figcaption>
+        <!-- Foto: assets/img/historia.jpg. Para trocar, salve outra no mesmo nome (vertical,
+             ~1050×1400 px, JPG < 300 KB — https://squoosh.app ajuda) e ajuste o alt. -->
+        <figure class="plate stamp story__photo">
+          <img src="assets/img/historia.jpg" alt="Verônica e João Igor se olhando e sorrindo num jardim ao pôr do sol, com as montanhas ao fundo" width="1050" height="1400" loading="lazy" decoding="async">
         </figure>
         <div class="story__text">
           <p>Há encontros que parecem escritos com calma, letra por letra. O nosso foi assim: feito de conversas longas, risadas fáceis e da certeza tranquila de que queríamos seguir juntos.</p>
           <p>Agora queremos celebrar este capítulo com as pessoas que fizeram parte de cada linha dele. Esperamos vocês em Belo Horizonte, numa sexta-feira de feriado, para um dia simples, bonito e cheio de afeto.</p>
-          <div class="signature">Verônica &amp; João Igor</div>
+          <div class="signature">Verônica <span class="amp">&amp;</span> João Igor</div>
         </div>
+      </div>
+
+      <!-- ✋ VOCÊ (opcional): ajuste as legendas (<figcaption>) — dá para pôr o ano, ex.:
+           "Fontana di Trevi, Roma · 2025". Fotos em assets/img/galeria-1..3.jpg (verticais 3:4). -->
+      <div class="gallery">
+        <figure class="gallery__item">
+          <div class="plate stamp"><img src="assets/img/galeria-1.jpg" alt="Os dois de rosto colado diante da Fontana di Trevi, à noite" width="825" height="1100" loading="lazy" decoding="async"></div>
+          <figcaption>Fontana di Trevi, Roma</figcaption>
+        </figure>
+        <figure class="gallery__item">
+          <div class="plate stamp"><img src="assets/img/galeria-2.jpg" alt="Os dois se olhando no alto das montanhas nevadas, sob um céu azul e o sol forte" width="825" height="1100" loading="lazy" decoding="async"></div>
+          <figcaption>Mont Blanc, nos Alpes</figcaption>
+        </figure>
+        <figure class="gallery__item">
+          <div class="plate stamp"><img src="assets/img/galeria-3.jpg" alt="Verônica mostra o anel de noivado numa selfie com João Igor diante de um mosaico dourado" width="825" height="1100" loading="lazy" decoding="async"></div>
+          <figcaption>O sim, no Vaticano</figcaption>
+        </figure>
       </div>
     </div>
   </section>
@@ -253,13 +317,18 @@
           </div>
         </div>
       </div>
+      <div class="schedule__actions">
+        <a class="btn btn-primary" data-ics href="#">Salvar na agenda</a>
+        <a class="btn btn-secondary" target="_blank" rel="noopener"
+           href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=Casamento%20Ver%C3%B4nica%20%26%20Jo%C3%A3o%20Igor&amp;dates=20270528T190000Z%2F20270529T060000Z&amp;location=Par%C3%B3quia%20Sant%C3%ADssima%20Trindade%2C%20R.%20Leonardo%20Gutierrez%2C%20125%2C%20Belo%20Horizonte&amp;details=Cerim%C3%B4nia%20%C3%A0s%2016h00.%20Recep%C3%A7%C3%A3o%20%C3%A0s%2017h30%20em%20Bra%C3%BAnas.">Google Agenda</a>
+      </div>
     </div>
   </section>
 
   <!-- ── Traje ────────────────────────────────────────────────────────────── -->
   <section class="section dress" id="traje">
     <div class="dress__checker" aria-hidden="true"></div>
-    <div class="dress__card">
+    <div class="dress__card stamp">
       <div class="kicker">Traje</div>
       <h2 class="dress__title">Esporte fino</h2>
       <div class="dress__rule" aria-hidden="true"></div>
@@ -390,6 +459,10 @@
           <textarea id="r-msg" name="msg" class="input" placeholder="Opcional"></textarea>
         </div>
 
+        <p class="rsvp__error" data-rsvp-error role="alert" hidden>
+          Não conseguimos enviar agora. Tente de novo em instantes ou
+          <a href="#" target="_blank" rel="noopener">confirme pelo WhatsApp</a>.
+        </p>
         <button class="btn btn-primary btn-block rsvp__submit" type="submit">Enviar confirmação</button>
       </form>
 
@@ -400,6 +473,7 @@
         </div>
         <div class="rsvp__thanks-title" data-thanks-title></div>
         <p data-thanks-text></p>
+        <a class="btn btn-primary rsvp__ics" data-ics href="#">Salvar a data na agenda</a>
         <button class="btn btn-ghost" type="button" data-rsvp-reset>Enviar outra confirmação</button>
       </div>
     </div>
@@ -412,6 +486,10 @@
       <div class="footer__names">Verônica<br class="br-mobile"> <span class="amp">&amp;</span> João Igor</div>
       <div class="footer__place">BELO<br class="br-mobile"><span class="long"> </span>HORIZONTE<br class="br-mobile"><span class="long"> · </span>28.05.2027</div>
       <div class="footer__sign">Com carinho, esperamos vocês.</div>
+      <button class="btn footer__share" type="button" data-share>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></svg>
+        Compartilhar o convite
+      </button>
     </div>
   </footer>
 
@@ -421,6 +499,7 @@
       <div class="stickybar__count">
         <div class="stickybar__label">Faltam</div>
         <div class="stickybar__days"><span data-cd="d">—</span> dias</div>
+        <div class="stickybar__today">É hoje!</div>
       </div>
       <a class="btn btn-primary" href="#rsvp">Confirmar presença</a>
     </div>
@@ -457,14 +536,18 @@
       <div class="giftmodal__title" id="giftmodal-title" data-gift-title></div>
       <div class="giftmodal__price" data-gift-price></div>
       <div class="giftmodal__pix">
-        <div class="giftmodal__pix-label">Chave Pix (e-mail)</div>
+        <div class="giftmodal__pix-label">Chave Pix · <span data-pix-type></span></div>
         <div class="giftmodal__pix-row">
           <div class="giftmodal__key" data-pix-key></div>
           <button class="btn btn-primary giftmodal__copy" type="button" data-pix-copy>Copiar</button>
         </div>
       </div>
       <button class="btn btn-primary giftmodal__copy--wide" type="button" data-pix-copy>Copiar chave Pix</button>
-      <p class="giftmodal__note">Titular: Verônica &amp; João Igor. Obrigado por fazer parte da nossa viagem.</p>
+      <dl class="giftmodal__holder">
+        <div><dt>Titular</dt><dd data-pix-holder></dd></div>
+        <div><dt>Banco</dt><dd data-pix-bank></dd></div>
+      </dl>
+      <p class="giftmodal__note">Confira o nome do titular antes de confirmar o Pix. Obrigado por fazer parte da nossa viagem.</p>
       <button class="btn btn-ghost" type="button" data-gift-close>Fechar</button>
     </div>
   </div>

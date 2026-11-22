@@ -2,7 +2,7 @@
    Vendored from the claude.ai/design project
    "Site de casamento japonês" (_ds/classical-b096fc7a-42de-4471-bef5-5bbbe08014aa/styles.css).
    This file is the source of truth for the system's look. Page-level styling lives in site.css. */
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Lora:wght@400;600&display=swap');
+/* Fonts (Cormorant Garamond + Lora, with their real italics) are loaded by a <link> in index.html's <head>. */
 
 :root {
   --color-bg: #f3f2f2;

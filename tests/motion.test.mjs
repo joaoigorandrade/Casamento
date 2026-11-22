@@ -172,3 +172,36 @@ test('motion never makes the phone layout scroll sideways', async () => {
   }
   await close();
 });
+
+test('envelope intro: holds the hero, opens on tap, then never shows again', async () => {
+  const context = await browser.newContext(PHONE);
+  // the page skips the intro for automated browsers; pretend to be a person
+  await context.addInitScript(() => Object.defineProperty(navigator, 'webdriver', { get: () => false }));
+  await context.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  const page = await context.newPage();
+  await page.goto(base);
+  assert.ok(await page.isVisible('#intro'), 'intro shows on the first visit');
+  await wait(page, 1500);
+  assert.equal(await page.$eval('.hero__names', (e) => getComputedStyle(e).opacity), '0', 'hero entrance waits');
+  assert.equal(await page.$eval('#historia', (e) => e.inert), true, 'page behind is inert');
+  await page.click('[data-intro-open]');
+  await page.waitForSelector('#intro', { state: 'detached', timeout: 4000 });
+  await wait(page, 2200);
+  assert.equal(await page.$eval('.hero__names', (e) => getComputedStyle(e).opacity), '1', 'hero plays after');
+  await page.reload();
+  assert.equal(await page.$('#intro'), null, 'second visit goes straight in');
+  await context.close();
+});
+
+test('countdown turns into "É hoje!" on the day and "Casados" after', async () => {
+  for (const [at, phase] of [['2027-05-28T18:00', 'today'], ['2027-06-02T10:00', 'after']]) {
+    const context = await browser.newContext(PHONE);
+    await context.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+    const page = await context.newPage();
+    await page.goto(`${base}?agora=${at}`);
+    assert.equal(await page.$eval('.countdown', (e) => e.dataset.phase), phase);
+    assert.equal(await page.isVisible(`.countdown__done--${phase}`), true);
+    assert.equal(await page.isVisible('.countdown__grid'), false);
+    await context.close();
+  }
+});
