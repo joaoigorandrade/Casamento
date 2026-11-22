@@ -22,6 +22,10 @@
       split: 70,           // artwork units each face drifts outward
       cornerTurn: 140,     // deg the corner marks turn over the hero's height
     },
+    dress: {               // Traje moodboard; each piece's [start, end] scroll window is its data-beat
+      overshoot: 2.2,      // how far a stamped piece (tag, stickers) squashes past its pose before settling
+      settle: 1.1,         // the same, gentler, for the card
+    },
     railScale: 0.06,       // how much smaller gift cards out of focus are
     rollCarry: 70,         // ms each countdown digit to the left rolls after the one on its right
     petals: {              // hero petals (mobile), in px and ms
@@ -86,8 +90,6 @@
     ['.venues', null, '.venue'],
     ['.venues__note'],
     ['.schedule', null, '.schedule__item'],
-    ['.dress__card', 'scale'],
-    ['.dress__card', null, '.kicker, .dress__title, .dress__rule, p'],
     ['.gifts__lede'],
     ['.gifts', null, '.gift', true], // a rail: reveal together, not as each card swipes in
     ['.rsvp__form', null, ':scope > .field, :scope > .rsvp__row, :scope > .rsvp__submit'],
@@ -125,7 +127,7 @@
   toReveal.forEach((el) => revealer.observe(el));
 
   /* ── Idle loops sleep off screen ───────────────────────────────────────── */
-  const sleepers = $$('.hero, .has-drift, .countdown');
+  const sleepers = $$('.hero, .has-drift, .countdown, .dress');
   const sleeper = new IntersectionObserver((entries) => {
     for (const e of entries) {
       e.target.classList.toggle('is-offscreen', !e.isIntersecting);
@@ -258,6 +260,19 @@
   const scheduleItems = schedule ? $$('.schedule__item', schedule) : [];
   const rail = $('.gifts');
   const giftCards = rail ? $$('.gift', rail) : [];
+  const dress = $('.dress');
+  const dressStage = dress ? $('.dress__stage', dress) : null;
+  const dressPieces = dress ? $$('[data-beat]', dress).map((el) => {
+    const [a, b] = el.dataset.beat.split(',').map(Number);
+    return { el, a, b, kind: el.dataset.ease || 'out' };
+  }) : [];
+  // ease-out for most pieces; a back-out (overshoot, then settle) for the stamped ones
+  const backOut = (t, s) => 1 + (s + 1) * (t - 1) ** 3 + s * (t - 1) ** 2;
+  const dressEase = {
+    out: (t) => 1 - (1 - t) ** 3,
+    settle: (t) => backOut(t, T.dress.settle),
+    stamp: (t) => backOut(t, T.dress.overshoot),
+  };
 
   const drifts = $$('[data-drift]').map((el) => {
     const [speed, spin] = el.dataset.drift.split(',').map(Number);
@@ -272,6 +287,9 @@
   let schedTop = 0;
   let schedH = 1;
   let itemTops = [];
+  let dressTop = 0;
+  let dressH = 0;
+  let dressRun = 1;
 
   const measure = () => {
     vh = innerHeight;
@@ -292,6 +310,13 @@
       schedTop = r.top + y;
       schedH = Math.max(1, r.height);
       itemTops = scheduleItems.map((it) => it.getBoundingClientRect().top + y - schedTop + 10);
+    }
+    if (dress) {
+      const r = dress.getBoundingClientRect();
+      // the stage pins below the top bar, so the run starts when the section reaches it
+      dressTop = r.top + y - (parseFloat(getComputedStyle(dressStage).top) || 0);
+      dressH = r.height;
+      dressRun = Math.max(1, r.height - dressStage.offsetHeight);
     }
     railCheck();
     kick();
@@ -338,6 +363,16 @@
       const k = drifts.indexOf(d);
       d.el.style.translate = `0 ${follow(`dy${k}`, p * d.speed).toFixed(2)}px`;
       d.el.style.rotate = `${follow(`dr${k}`, p * d.spin).toFixed(2)}deg`;
+    }
+
+    // Traje: while the stage is pinned, scrolling assembles the moodboard
+    if (dress && y + vh > dressTop - 200 && y < dressTop + dressH + 200) {
+      const p = clamp((y - dressTop) / dressRun);
+      dress.style.setProperty('--p', follow('dressP', p).toFixed(4));
+      dressPieces.forEach((d, i) => {
+        const t = follow(`dress${i}`, clamp((p - d.a) / (d.b - d.a)));
+        d.el.style.setProperty('--t', dressEase[d.kind](t).toFixed(4));
+      });
     }
 
     // timeline: the line fills up to the middle of the screen

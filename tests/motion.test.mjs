@@ -162,6 +162,55 @@ test('desktop layout keeps the petals off', async () => {
   await close();
 });
 
+// scroll to fraction p of the Traje pin (the stage sticks below the top bar)
+const dressAt = (page, p) => page.evaluate((p) => {
+  const d = document.querySelector('.dress'), st = document.querySelector('.dress__stage');
+  const top = d.getBoundingClientRect().top + scrollY - (parseFloat(getComputedStyle(st).top) || 0);
+  scrollTo({ top: top + p * (d.offsetHeight - st.offsetHeight), behavior: 'instant' });
+}, p);
+const dressTs = (page) => page.$$eval('.dress [data-beat]', (els) => els.map((e) => Number(e.style.getPropertyValue('--t'))));
+
+test('Traje: the stage pins and the moodboard assembles as you scroll', async () => {
+  const { page, errors, close } = await open();
+  await dressAt(page, 0);
+  await wait(page, 900);
+  const start = await dressTs(page);
+  assert.ok(start.length > 15);
+  assert.ok(start.every((t) => t < 0.05), 'nothing is placed at the start');
+
+  await dressAt(page, 0.5);
+  await wait(page, 900);
+  const bar = await page.$eval('.dress__stage', (e) => parseFloat(getComputedStyle(e).top));
+  assert.equal(await page.$eval('.dress__stage', (e) => Math.round(e.getBoundingClientRect().top)), bar, 'pinned mid-way');
+  const mid = await dressTs(page);
+  assert.ok(mid.some((t) => t > 0.99) && mid.some((t) => t < 0.01), 'half assembled mid-way');
+
+  await dressAt(page, 1);
+  await wait(page, 1200);
+  assert.ok((await dressTs(page)).every((t) => Math.abs(t - 1) < 0.01), 'every piece lands on its pose');
+  assert.equal(await page.$eval('.dress__tag', (e) => getComputedStyle(e).opacity), '1');
+  assert.deepEqual(errors, []);
+  await close();
+});
+
+test('Traje with reduced motion is the finished collage, not pinned', async () => {
+  const { page, close } = await open({ reducedMotion: 'reduce' });
+  await jumpTo(page, '.dress');
+  await wait(page, 300);
+  const s = await page.evaluate(() => {
+    const d = document.querySelector('.dress'), st = document.querySelector('.dress__stage');
+    return { pos: getComputedStyle(st).position, extra: d.offsetHeight - st.offsetHeight };
+  });
+  assert.equal(s.pos, 'relative');
+  assert.ok(s.extra <= 1, `section is just the stage (+ its 1px border), not a tall pin (${s.extra}px)`);
+  for (const sel of ['.dress__cardwrap', '.dress__tag', '.dress__blazer', '.dress__swatch--1', '.dress__word--a']) {
+    const st = await page.$eval(sel, (e) => ({ o: getComputedStyle(e).opacity, tr: getComputedStyle(e).translate }));
+    assert.equal(st.o, sel === '.dress__word--a' ? '0.9' : '1', `${sel} visible`);
+    assert.ok(st.tr === 'none' || /^0px( 0px)?$/.test(st.tr), `${sel} at its pose (${st.tr})`);
+  }
+  await close();
+});
+
 test('motion never makes the phone layout scroll sideways', async () => {
   const { page, close } = await open();
   for (const y of [0, 0.25, 0.5, 0.75, 1]) {

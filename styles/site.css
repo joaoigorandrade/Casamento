@@ -367,21 +367,142 @@ a:hover { color: var(--deep-red); }
 .schedule__actions .btn { min-height: 44px; padding-inline: 22px; }
 
 /* ── Traje ────────────────────────────────────────────────────────────────── */
-.dress { position: relative; overflow: hidden; }
+/* A moodboard collage. This is the finished page; motion.js plays it in by writing --t
+   (0 → 1) on each [data-beat] element, and every pose below is written so that t = 1 is
+   exactly this layout: the entry offsets (--fx/--fy/--fr/--fs) fade to nothing at t = 1. */
+.dress { position: relative; --bar: 60px; /* the sticky top bar the pinned stage sits under */ }
+.dress [data-beat] { --t: 1; }
+.dress__stage {
+  position: relative; overflow: clip;
+  height: clamp(680px, 100svh, 900px);
+  display: grid;
+}
 .dress__checker {
-  position: absolute; inset: 0; opacity: 0.7;
+  position: absolute; inset: -60px 0; opacity: 0.7;
   background: repeating-conic-gradient(var(--check-pale) 0 25%, var(--color-bg) 0 50%) 0 0 / 56px 56px;
+}
+.dress__board {
+  position: relative; width: min(1120px, 100%); height: 100%; margin-inline: auto;
+  display: grid; place-items: center;
+}
+.dress__piece, .dress__cardwrap, .dress__word {
+  translate: calc(var(--fx, 0px) * (1 - var(--t))) calc(var(--fy, 0px) * (1 - var(--t)));
+  rotate: calc(var(--r, 0deg) + var(--fr, 0deg) * (1 - var(--t)));
+  scale: calc(1 + (var(--fs, 1) - 1) * (1 - var(--t)));
+}
+.dress__piece, .dress__cardwrap { opacity: clamp(0, var(--t) * 4, 1); }
+.dress__piece { position: absolute; z-index: 1; pointer-events: none; }
+
+/* the giant red script behind everything, written on left to right */
+.dress__script { position: absolute; inset: 0; pointer-events: none; }
+.dress__word {
+  position: absolute;
+  font-family: var(--font-heading); font-style: italic; font-weight: 500;
+  font-size: clamp(120px, 17vw, 236px); line-height: 1; letter-spacing: -0.02em;
+  color: var(--deep-red); opacity: 0.9; white-space: nowrap;
+  padding: 0 0.12em 0.1em;
+  clip-path: inset(-10% calc((1 - var(--t)) * 100%) -10% 0);
+}
+.dress__word--a { top: 2%; left: 0; --r: -7deg; --fx: -40px; }
+.dress__word--b { bottom: 1%; right: 2%; --r: -5deg; --fx: 40px; }
+
+/* line drawings: the ink draws on (pathLength = 1), then the colour washes in */
+.ink { display: block; width: 100%; height: auto; overflow: visible; }
+.ink .ln {
+  fill: none; stroke: var(--navy); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 1 1; stroke-dashoffset: calc(1 - var(--t));
+}
+.ink .fill { opacity: clamp(0, (var(--t) - 0.55) * 2.6, 1); }
+.dress__blazer { left: 3%; top: 33%; width: clamp(150px, 17vw, 210px); --r: -7deg; --fx: -90px; --fy: 30px; --fr: -10deg; }
+.dress__frock  { right: 3%; top: 5%; width: clamp(150px, 17vw, 206px); --r: 6deg; --fx: 90px; --fy: -30px; --fr: 10deg; }
+.dress__heel   { right: 33%; bottom: 5%; width: clamp(104px, 11vw, 136px); --r: -12deg; --fx: 70px; --fy: 50px; --fr: -20deg; }
+.dress__shades { right: 24%; top: 8%; width: clamp(96px, 10vw, 124px); --r: 9deg; --fy: -50px; --fr: 18deg; z-index: 3; }
+
+/* masking tape */
+.dress__tape {
+  top: -12px; left: 50%; margin-left: -36px; width: 72px; height: 22px; z-index: 2;
+  background: color-mix(in srgb, #efe3c8 82%, transparent);
+  clip-path: polygon(0 8%, 6% 0, 12% 10%, 18% 0, 82% 0, 88% 12%, 94% 0, 100% 10%, 100% 92%, 94% 100%, 88% 90%, 82% 100%, 18% 100%, 12% 88%, 6% 100%, 0 90%);
+  --r: -14deg; --fs: 1.5;
+}
+.dress__frock .dress__tape { --r: 10deg; }
+
+/* fabric swatches, fanned out */
+.dress__swatches { position: absolute; left: 4%; bottom: 4%; width: 250px; height: 170px; }
+.dress__swatch { width: 100px; height: 100px; filter: drop-shadow(0 6px 8px rgba(38, 43, 54, 0.14)); --fx: -160px; --fy: 90px; }
+.dress__swatch--1 { left: 0; bottom: 12px; --r: -14deg; --fr: -30deg; }
+.dress__swatch--2 { left: 48px; bottom: 34px; --r: -3deg; --fr: -20deg; }
+.dress__swatch--3 { left: 96px; bottom: 14px; --r: 9deg; --fr: -12deg; }
+.dress__swatch--4 { left: 142px; bottom: 38px; --r: 18deg; --fr: -6deg; }
+
+/* the card, slightly askew, with a paint-chip strip and the tag pinned to it */
+.dress__cardwrap {
+  position: relative; z-index: 2; width: calc(100% - 40px); max-width: 540px;
+  --r: -1.5deg; --fr: -5deg; --fs: 1.12; --fy: -30px;
 }
 .dress__card {
   --r: 8px; --d: 22px;
-  position: relative; max-width: 640px; width: calc(100% - 40px);
-  margin: clamp(70px, 10vw, 120px) auto;
-  padding: clamp(40px, 7vw, 72px) clamp(24px, 6vw, 64px);
+  position: relative;
+  padding: clamp(40px, 6vw, 60px) clamp(24px, 5vw, 56px);
   background: var(--paper);
   border: 0;
   outline: 1px solid var(--color-accent); outline-offset: -16px;
   display: flex; flex-direction: column; align-items: center; gap: 18px; text-align: center;
+  filter: drop-shadow(0 22px 26px rgba(38, 43, 54, 0.16));
 }
+.dress__card > [data-beat] {
+  opacity: clamp(0, var(--t) * 1.6, 1);
+  translate: 0 calc(14px * (1 - var(--t)));
+}
+.dress__card > .dress__rule { scale: var(--t) 1; }
+
+.dress__chips {
+  left: 50%; bottom: -26px; margin-left: -96px; z-index: 3;
+  display: flex; gap: 8px; padding: 10px 12px;
+  background: var(--paper) var(--grain);
+  box-shadow: 0 8px 18px -12px rgba(38, 43, 54, 0.4);
+  --r: 2deg; --fy: 60px; --fr: 8deg;
+}
+.dress__chips i { width: 26px; height: 26px; border-radius: 50%; background: var(--c); box-shadow: inset 0 0 0 1px rgba(38, 43, 54, 0.12); }
+
+.dress__tag {
+  right: -76px; bottom: 54px; z-index: 4;
+  --r: 9deg; --fs: 1.7; --fr: -12deg;
+}
+.dress__tag-live {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px 12px 26px;
+  background: var(--paper) var(--grain);
+  border: 1px solid var(--color-accent);
+  clip-path: polygon(14px 0, 100% 0, 100% 100%, 14px 100%, 0 50%);
+  transform-origin: 0 50%;
+  box-shadow: 0 10px 18px -12px rgba(38, 43, 54, 0.4);
+  position: relative;
+}
+.dress__tag-live::before { /* the eyelet */
+  content: ''; position: absolute; left: 10px; top: 50%; width: 6px; height: 6px; margin-top: -3px;
+  border-radius: 50%; border: 1px solid var(--color-accent);
+}
+.dress__tag-x {
+  position: relative; flex: none; width: 30px; height: 30px; border-radius: 50%;
+  background: #fff; box-shadow: inset 0 0 0 1px rgba(38, 43, 54, 0.2);
+}
+.dress__tag-x::before, .dress__tag-x::after {
+  content: ''; position: absolute; left: -3px; right: -3px; top: 50%; height: 2px; margin-top: -1px;
+  background: var(--color-accent); rotate: 45deg; border-radius: 2px;
+}
+.dress__tag-x::after { rotate: -45deg; }
+.dress__tag-text {
+  font-family: var(--font-heading); font-style: italic; font-size: 19px; line-height: 1.05;
+  color: var(--deep-red); white-space: nowrap;
+}
+
+/* stickers from the invitation */
+.dress__sticker { width: 40px; height: 40px; z-index: 3; --fs: 2.2; --fr: -90deg; overflow: visible; }
+.dress__sticker--a { top: 13%; left: 37%; --r: -12deg; }
+.dress__sticker--b { top: 21%; right: 22%; width: 44px; --r: 10deg; }
+.dress__sticker--c { bottom: 11%; left: 31%; width: 34px; --r: 0deg; }
+.dress__sticker--d { top: 54%; right: 6%; width: 32px; --r: 20deg; }
 .dress__title {
   margin: 0; font-family: var(--font-heading); font-weight: 400;
   font-size: clamp(38px, 6vw, 56px); line-height: 1.05;
@@ -668,12 +789,37 @@ a:hover { color: var(--deep-red); }
   .schedule__actions { display: grid; grid-template-columns: 1fr 1fr; margin-top: 36px; }
 
   /* traje */
-  .dress { padding: 56px 20px; }
+  .dress__stage { height: max(640px, calc(100svh - var(--bar))); }
   .dress__checker { background-size: 44px 44px; }
-  .dress__card {
-    width: 100%; margin: 0; padding: 54px 34px; gap: 16px;
-    outline-offset: -14px;
-  }
+  /* the sticky "Confirmar presença" bar covers the bottom of the screen on phones */
+  .dress__board { height: calc(100% - 76px); }
+  .dress__cardwrap { width: calc(100% - 44px); max-width: 360px; }
+  .dress__card { padding: 44px 26px 50px; gap: 14px; outline-offset: -14px; }
+  .dress__word { font-size: 96px; }
+  .dress__word--a { top: 6%; left: -10px; --r: -4deg; }
+  .dress__word--b { bottom: 0; right: auto; left: 24%; }
+  .dress__frock  { width: 116px; right: -14px; top: 2%; }
+  .dress__shades { width: 86px; right: auto; left: 10%; top: 11%; }
+  .dress__blazer { width: 118px; left: -16px; top: auto; bottom: -2%; }
+  .dress__heel   { display: none; }
+  .dress__swatches { left: auto; right: -14px; bottom: 2%; width: 150px; height: 110px; }
+  .dress__swatch { width: 62px; height: 62px; --fx: 120px; }
+  .dress__swatch--1 { left: 0; bottom: 8px; }
+  .dress__swatch--2 { left: 28px; bottom: 24px; }
+  .dress__swatch--3 { left: 58px; bottom: 6px; }
+  .dress__swatch--4 { left: 86px; bottom: 26px; }
+  .dress__tape { width: 54px; height: 18px; margin-left: -27px; top: -9px; }
+  .dress__chips { bottom: -20px; margin-left: -78px; gap: 6px; padding: 8px 10px; }
+  .dress__chips i { width: 22px; height: 22px; }
+  .dress__tag { right: auto; left: -12px; bottom: auto; top: -34px; --r: -7deg; }
+  .dress__tag-live { padding: 9px 12px 9px 22px; gap: 8px; }
+  .dress__tag-x { width: 24px; height: 24px; }
+  .dress__tag-text { font-size: 16px; }
+  .dress__sticker { width: 28px; height: 28px; }
+  .dress__sticker--a { top: 31%; left: auto; right: 3%; }
+  .dress__sticker--b { top: 4%; left: 44%; right: auto; width: 30px; }
+  .dress__sticker--c { bottom: 22%; left: auto; right: 4%; width: 24px; }
+  .dress__sticker--d { bottom: 17%; right: auto; left: 5%; width: 24px; }
   .dress__title { font-size: 40px; }
   .dress__rule { width: 36px; }
   .dress__lead { font-size: 14.5px; line-height: 1.8; }

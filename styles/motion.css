@@ -133,6 +133,22 @@ svg.hero__date { display: block; width: min(250px, 78%); height: auto; overflow:
   .motion .schedule__item.is-past::before { background: var(--color-accent); transform: scale(1.12); }
 }
 
+/* ── Traje: the moodboard assembles while the stage is pinned ────────────── */
+/* The section is tall and the stage sticks; motion.js maps the scroll through it to
+   p = 0…1 and writes --t on every [data-beat] piece (see site.css for the poses). */
+.motion .dress { height: 250svh; }
+.motion .dress__stage { position: sticky; top: var(--bar); height: max(600px, calc(100svh - var(--bar))); }
+.motion .dress__checker { translate: 0 calc(var(--p, 0) * -60px); }
+.motion .dress__piece, .motion .dress__cardwrap, .motion .dress__word { will-change: translate, rotate, scale, opacity; }
+/* once they land, the light things keep moving a little */
+.motion .dress__tag-live { animation: sway-mid 5200ms ease-in-out -1200ms infinite; }
+.motion .dress__sticker--a use, .motion .dress__sticker--d use { animation: sway 4600ms ease-in-out infinite alternate; transform-origin: center; transform-box: fill-box; }
+.motion .dress__sticker--b use, .motion .dress__sticker--c use { animation: spin 32s linear infinite; transform-origin: center; transform-box: fill-box; }
+@media (max-width: 759.98px) {
+  .motion .dress { height: 210svh; }
+  .motion .dress__stage { height: max(560px, calc(100svh - var(--bar))); }
+}
+
 /* ── Gift rail: the card in focus sits forward (mobile) ──────────────────── */
 .motion .gifts.is-rail .gift { transform-origin: center bottom; will-change: scale; }
 
